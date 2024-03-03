@@ -458,11 +458,21 @@ public class CheckersGameState extends GameState<CheckersAction> {
             }
         }
 
-        double blckStoneCount = blckNonKingStoneCount + 2 * blckKingStoneCount;
-        double whtStoneCount  = whtNonKingStoneCount  + 2 * whtKingStoneCount;
+        double blckStoneCount = (blckNonKingStoneCount + 2 * blckKingStoneCount);
+        double whtStoneCount  = (whtNonKingStoneCount  + 2 * whtKingStoneCount);
 
-        score.put(User.ONE, normalize(blckStoneCount , whtStoneCount) );
-        score.put(User.TWO, normalize(whtStoneCount , blckStoneCount) );
+        double player1Score = normalize(blckStoneCount, whtStoneCount);
+        double player2Score = normalize(whtStoneCount, blckStoneCount);
+
+        if (this.terminal == true)
+        {
+            score = getScoreMap(player1Score, player2Score);
+        }
+        else
+        {
+            score.put(User.ONE, player1Score);
+            score.put(User.TWO, player2Score);
+        }
 
         return score;
     }
@@ -486,28 +496,33 @@ public class CheckersGameState extends GameState<CheckersAction> {
         return getUtilityMap().get(user);
     }
 
-    @Override
-    public Map<User, Double> getScoreMap() {
-        Map<User, Double> utilMap = getUtilityMap();
+    public Map<User, Double> getScoreMap(double player1Score, double player2Score)
+    {
         Map<User, Double> score = new HashMap<User, Double>();
 
-        if (utilMap.get(User.ONE) > utilMap.get(User.TWO) )
+        if (player1Score > player2Score )
         {
             score.put(User.ONE, 1.0);
             score.put(User.TWO, 0.0);
         }
-        else if (utilMap.get(User.ONE) < utilMap.get(User.TWO) )
+        else if (player1Score < player2Score )
         {
             score.put(User.ONE, 0.0);
             score.put(User.TWO, 1.0);
         }
         else
         {
-            score.put(User.ONE, 0.0);
-            score.put(User.TWO, 0.0);
+            score.put(User.ONE, 0.5);
+            score.put(User.TWO, 0.5);
         }
 
         return score;
+    }
+
+    @Override
+    public Map<User, Double> getScoreMap() {
+        Map<User, Double> utilMap = getUtilityMap();
+        return getScoreMap(utilMap.get(User.ONE), utilMap.get(User.TWO) );
     }
 
     @Override

@@ -218,8 +218,6 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
         Map<User, Double> score = new HashMap<User, Double>();
         Map<User, Double> temp = new HashMap<User, Double>();
         double player1Utility = 0, player2Utility = 0;
-
-        TicTacToeStone player1Stone = TicTacToeStone.X, player2Stone = TicTacToeStone.O;
         BoardVisit checkVisit = new BoardVisit(this.boardSize);
 
         for (int row = 0; row < boardSize; row++) {
@@ -275,11 +273,11 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
         Map<User, Double> score = new HashMap<User, Double>();
         Map<User, Double> scoreMap = getScoreMap(3);
 
-        double player1Score = scoreMap.get(User.ONE);
-        double player2Score = scoreMap.get(User.TWO);
+        double player1Score = scoreMap.get(User.ONE) / MAX_POINT;
+        double player2Score = scoreMap.get(User.TWO) / MAX_POINT;
 
-        score.put(User.ONE, normalize(player1Score, player2Score) );
-        score.put(User.TWO, normalize(player2Score, player1Score) );
+        score.put(User.ONE, player1Score);
+        score.put(User.TWO, player2Score);
 
         return score;
     }
@@ -356,7 +354,7 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
     {
         int playerSeqLength = 0, emptySeqLength = 0;
         double tempUtility = 0, utility = 0;
-        final double PLAYER_POINT = 1.0, EMPTY_POINT = 0.25;
+        final double PLAYER_POINT = 1.0, EMPTY_POINT = 0;
 
         for (int i = 0; i < blockSize; i++) {
             int nextCol = col + i * deltaX;
@@ -370,7 +368,7 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
             else if (board[nextRow][nextCol] == TicTacToeStone.NULL)
             {
                 tempUtility += EMPTY_POINT;
-                emptySeqLength++;
+                //emptySeqLength++;
             }
             else
             {
@@ -442,7 +440,7 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
     public int getBoardSize() {
         return this.boardSize;
     }
-    private double getMaxPoint(int boardSize)
+    private double getMaxPoint2(int boardSize)
     {
         if (boardSize == 3)      // Approved
             return 3;
@@ -450,6 +448,28 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
             return 52.0;
         else if (boardSize == 5) // Approved
             return 88.0;
+        else if (boardSize == 6) // Approved
+            return 132.0;
+        else if (boardSize == 7) // Approved
+            return 86;
+        else if (boardSize == 8)
+            return 100;
+        else if (boardSize == 9)
+            return 120;
+        else if (boardSize == 10)
+            return 130;
+        else
+            return 1000;
+    }
+
+    private double getMaxPoint(int boardSize)
+    {
+        if (boardSize == 3)      // Approved
+            return 3;
+        else if (boardSize == 4) // Approved
+            return 52.0;
+        else if (boardSize == 5) // Approved
+            return 38.0;
         else if (boardSize == 6) // Approved
             return 132.0;
         else if (boardSize == 7) // Approved

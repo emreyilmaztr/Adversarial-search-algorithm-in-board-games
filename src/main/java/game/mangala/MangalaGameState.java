@@ -288,13 +288,13 @@ public class MangalaGameState extends GameState<MangalaAction> {
 
     @Override
     public Map<User, Double> getUtilityMap() {
-        double player1Score = playerTreasure;
-        double player2Score = opponentTreasure;
+        double player1Score = playerTreasure / TOTAL_STONE_COUNT;
+        double player2Score = opponentTreasure / TOTAL_STONE_COUNT;
 
         Map<User, Double> score = new HashMap<User, Double>();
 
-        score.put(User.ONE, normalize(player1Score, player2Score) );
-        score.put(User.TWO, normalize(player2Score, player1Score) );
+        score.put(User.ONE, player1Score );
+        score.put(User.TWO, player2Score );
 
         return score;
     }
