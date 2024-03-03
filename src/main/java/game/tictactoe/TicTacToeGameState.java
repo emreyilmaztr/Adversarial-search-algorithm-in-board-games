@@ -273,11 +273,18 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
         Map<User, Double> score = new HashMap<User, Double>();
         Map<User, Double> scoreMap = getScoreMap(3);
 
-        double player1Score = scoreMap.get(User.ONE) / MAX_POINT;
-        double player2Score = scoreMap.get(User.TWO) / MAX_POINT;
+        double player1Score = normalize(scoreMap.get(User.ONE), scoreMap.get(User.TWO) );
+        double player2Score = normalize(scoreMap.get(User.TWO), scoreMap.get(User.ONE) );
 
-        score.put(User.ONE, player1Score);
-        score.put(User.TWO, player2Score);
+        if (this.terminal == true)
+        {
+            score = getScoreMap(player1Score, player2Score);
+        }
+        else
+        {
+            score.put(User.ONE, player1Score);
+            score.put(User.TWO, player2Score);
+        }
 
         return score;
     }
@@ -290,27 +297,31 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
         return getUtilityMap().get(user);
     }
 
-    public Map<User, Double> getScoreMap() {
-        Map<User, Double> utilMap = getUtilityMap();
+    public Map<User, Double> getScoreMap(double player1Score, double player2Score)
+    {
         Map<User, Double> score = new HashMap<User, Double>();
-
-        if (utilMap.get(User.ONE) > utilMap.get(User.TWO) )
+        if (player1Score > player2Score )
         {
             score.put(User.ONE, 1.0);
-            score.put(User.TWO, -1.0);
+            score.put(User.TWO, 0.0);
         }
-        else if (utilMap.get(User.ONE) < utilMap.get(User.TWO) )
+        else if (player1Score < player2Score )
         {
-            score.put(User.ONE, -1.0);
+            score.put(User.ONE, 0.0);
             score.put(User.TWO, 1.0);
         }
         else
         {
-            score.put(User.ONE, 0.0);
-            score.put(User.TWO, 0.0);
+            score.put(User.ONE, 0.5);
+            score.put(User.TWO, 0.5);
         }
 
         return score;
+    }
+
+    public Map<User, Double> getScoreMap() {
+        Map<User, Double> utilMap = getUtilityMap();
+        return getScoreMap(utilMap.get(User.ONE), utilMap.get(User.TWO) );
     }
 
     @Override
@@ -340,8 +351,8 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
     {
         Map<User, Double> utility = new HashMap<User, Double>();
 
-        double player1Utility = calculateUtility(TicTacToeStone.X, row, col, deltaX, deltaY, blockSize);
-        double player2Utility = calculateUtility(TicTacToeStone.O, row, col, deltaX, deltaY, blockSize);
+        double player1Utility = calculateUtility(TicTacToeStone.X, row, col, deltaX, deltaY, blockSize, minBlockSize);
+        double player2Utility = calculateUtility(TicTacToeStone.O, row, col, deltaX, deltaY, blockSize, minBlockSize);
         fillVisit(row, col, deltaX, deltaY, blockSize, boardVisit, visitType);
 
         utility.put(User.ONE, player1Utility);
@@ -350,11 +361,11 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
         return utility;
     }
 
-    private double calculateUtility(TicTacToeStone player, int row, int col, int deltaX, int deltaY, int blockSize)
+    private double calculateUtility(TicTacToeStone player, int row, int col, int deltaX, int deltaY, int blockSize, int minBlockSize)
     {
         int playerSeqLength = 0, emptySeqLength = 0;
         double tempUtility = 0, utility = 0;
-        final double PLAYER_POINT = 1.0, EMPTY_POINT = 0;
+        final double PLAYER_POINT = 1.0, EMPTY_POINT = 0.25;
 
         for (int i = 0; i < blockSize; i++) {
             int nextCol = col + i * deltaX;
@@ -368,11 +379,11 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
             else if (board[nextRow][nextCol] == TicTacToeStone.NULL)
             {
                 tempUtility += EMPTY_POINT;
-                //emptySeqLength++;
+                emptySeqLength++;
             }
             else
             {
-                if ( playerSeqLength > 0 && (playerSeqLength + emptySeqLength) >= 3) {
+                if ( playerSeqLength > 0 && (playerSeqLength + emptySeqLength) >= minBlockSize) {
                     utility += tempUtility;
                 }
 
@@ -383,7 +394,7 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
         }
 
         // check last series
-        if ( playerSeqLength > 0 && (playerSeqLength + emptySeqLength) >= 3) {
+        if ( playerSeqLength > 0 && (playerSeqLength + emptySeqLength) >= minBlockSize) {
             utility += tempUtility;
         }
 
