@@ -288,13 +288,21 @@ public class MangalaGameState extends GameState<MangalaAction> {
 
     @Override
     public Map<User, Double> getUtilityMap() {
-        double player1Score = playerTreasure / TOTAL_STONE_COUNT;
-        double player2Score = opponentTreasure / TOTAL_STONE_COUNT;
+
+        double player1Score = normalize(playerTreasure, opponentTreasure);
+        double player2Score = normalize(opponentTreasure, playerTreasure);
 
         Map<User, Double> score = new HashMap<User, Double>();
 
-        score.put(User.ONE, player1Score );
-        score.put(User.TWO, player2Score );
+        if (this.terminal == true)
+        {
+            score = getScoreMap(player1Score, player2Score);
+        }
+        else
+        {
+            score.put(User.ONE, player1Score);
+            score.put(User.TWO, player2Score);
+        }
 
         return score;
     }
@@ -307,24 +315,30 @@ public class MangalaGameState extends GameState<MangalaAction> {
         return getUtilityMap().get(user);
     }
 
+    @Override
     public Map<User, Double> getScoreMap() {
         Map<User, Double> utilMap = getUtilityMap();
+        return getScoreMap(utilMap.get(User.ONE), utilMap.get(User.TWO) );
+    }
+
+    public Map<User, Double> getScoreMap(double player1Score, double player2Score)
+    {
         Map<User, Double> score = new HashMap<User, Double>();
 
-        if (utilMap.get(User.ONE) > utilMap.get(User.TWO) )
+        if (player1Score > player2Score )
         {
             score.put(User.ONE, 1.0);
             score.put(User.TWO, 0.0);
         }
-        else if (utilMap.get(User.ONE) < utilMap.get(User.TWO) )
+        else if (player1Score < player2Score )
         {
             score.put(User.ONE, 0.0);
             score.put(User.TWO, 1.0);
         }
         else
         {
-            score.put(User.ONE, 0.0);
-            score.put(User.TWO, 0.0);
+            score.put(User.ONE, 0.5);
+            score.put(User.TWO, 0.5);
         }
 
         return score;
