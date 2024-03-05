@@ -18,7 +18,6 @@ public class CheckersGameState extends GameState<CheckersAction> {
     {
         initializeData();
         initializeBoard();
-        //debugGame();
     }
 
     private void initializeData()
@@ -458,8 +457,8 @@ public class CheckersGameState extends GameState<CheckersAction> {
             }
         }
 
-        double blckStoneCount = (blckNonKingStoneCount + 2 * blckKingStoneCount);
-        double whtStoneCount  = (whtNonKingStoneCount  + 2 * whtKingStoneCount);
+        double blckStoneCount = (blckNonKingStoneCount + 1.5 * blckKingStoneCount);
+        double whtStoneCount  = (whtNonKingStoneCount  + 1.5 * whtKingStoneCount);
 
         double player1Score = normalize(blckStoneCount, whtStoneCount);
         double player2Score = normalize(whtStoneCount, blckStoneCount);
@@ -479,16 +478,6 @@ public class CheckersGameState extends GameState<CheckersAction> {
 
     private double normalize(double score1, double score2) {
         return (score1 - score2) / (score1 + score2 + 0.0001);
-    }
-
-    private double normalize1_1(double rawScore) {
-        // Normalize [-1, 1]
-        return 2.0 / (1.0 + Math.exp(-rawScore)) - 1.0;
-    }
-
-    private double normalize0_1(double rawScore) {
-        // Normalize [-1, 1]
-        return 1.0 / (1.0 + Math.exp(-rawScore));
     }
 
     @Override
@@ -517,12 +506,6 @@ public class CheckersGameState extends GameState<CheckersAction> {
         }
 
         return score;
-    }
-
-    @Override
-    public Map<User, Double> getScoreMap() {
-        Map<User, Double> utilMap = getUtilityMap();
-        return getScoreMap(utilMap.get(User.ONE), utilMap.get(User.TWO) );
     }
 
     @Override
@@ -623,105 +606,5 @@ public class CheckersGameState extends GameState<CheckersAction> {
             }
             // end for.
         }
-    }
-
-    private int getAllAttackSize(CheckersStone checkersStone, final CheckersStone[][] board)
-    {
-        List<CheckersAction> list = getLegalAttacks(checkersStone, board);
-        int attackSize = list.size();
-
-        CheckersStone[][] myBoard = new CheckersStone[BOARD_HEIGHT][BOARD_WIDTH];
-
-        for (CheckersAction action:list)
-        {
-            copyBoard(board, myBoard);
-
-            applyAttack(myBoard, action.getSourceStone().checkerPoint, action.getDestPoint(), action.getDeletedPoint());
-
-            // After applying attack, find available attacks from destination stone
-            attackSize += getAllAttackSize(myBoard[action.getDestPoint().getRow()][action.getDestPoint().getCol()], myBoard);
-        }
-
-        return attackSize;
-    }
-
-    void debugGame()
-    {
-        /// DEBUG ////
-        CheckersStone[][] debugBoard = new CheckersStone[8][8];
-
-        debugBoard[0][0] =  new CheckersStone(0 ,0, StoneType.NULL);
-        debugBoard[0][1] =  new CheckersStone(0 ,1, StoneType.WHITE, true);
-        debugBoard[0][2] =  new CheckersStone(0 ,2, StoneType.NULL);
-        debugBoard[0][3] =  new CheckersStone(0 ,3, StoneType.BLACK, true);
-        debugBoard[0][4] =  new CheckersStone(0 ,4, StoneType.NULL);
-        debugBoard[0][5] =  new CheckersStone(0 ,5, StoneType.NULL);
-        debugBoard[0][6] =  new CheckersStone(0 ,6, StoneType.NULL);
-        debugBoard[0][7] =  new CheckersStone(0 ,7, StoneType.NULL);
-
-        debugBoard[1][0] =  new CheckersStone(1 ,0, StoneType.NULL);
-        debugBoard[1][1] =  new CheckersStone(1 ,1, StoneType.NULL);
-        debugBoard[1][2] =  new CheckersStone(1 ,2, StoneType.NULL);
-        debugBoard[1][3] =  new CheckersStone(1 ,3, StoneType.NULL);
-        debugBoard[1][4] =  new CheckersStone(1 ,4, StoneType.NULL);
-        debugBoard[1][5] =  new CheckersStone(1 ,5, StoneType.NULL);
-        debugBoard[1][6] =  new CheckersStone(1 ,6, StoneType.NULL);
-        debugBoard[1][7] =  new CheckersStone(1 ,7, StoneType.NULL);
-
-        debugBoard[2][0] =  new CheckersStone(2 ,0, StoneType.NULL);
-        debugBoard[2][1] =  new CheckersStone(2 ,1, StoneType.NULL);
-        debugBoard[2][2] =  new CheckersStone(2 ,2, StoneType.NULL);
-        debugBoard[2][3] =  new CheckersStone(2 ,3, StoneType.NULL);
-        debugBoard[2][4] =  new CheckersStone(2 ,4, StoneType.NULL);
-        debugBoard[2][5] =  new CheckersStone(2 ,5, StoneType.NULL);
-        debugBoard[2][6] =  new CheckersStone(2 ,6, StoneType.NULL);
-        debugBoard[2][7] =  new CheckersStone(2 ,7, StoneType.NULL);
-
-        debugBoard[3][0] =  new CheckersStone(3 ,0, StoneType.NULL);
-        debugBoard[3][1] =  new CheckersStone(3 ,1, StoneType.NULL);
-        debugBoard[3][2] =  new CheckersStone(3 ,2, StoneType.NULL);
-        debugBoard[3][3] =  new CheckersStone(3 ,3, StoneType.NULL);
-        debugBoard[3][4] =  new CheckersStone(3 ,4, StoneType.NULL);
-        debugBoard[3][5] =  new CheckersStone(3 ,5, StoneType.NULL);
-        debugBoard[3][6] =  new CheckersStone(3 ,6, StoneType.NULL);
-        debugBoard[3][7] =  new CheckersStone(3 ,7, StoneType.NULL);
-
-        debugBoard[4][0] =  new CheckersStone(4 ,0, StoneType.NULL);
-        debugBoard[4][1] =  new CheckersStone(4 ,1, StoneType.NULL);
-        debugBoard[4][2] =  new CheckersStone(4 ,2, StoneType.NULL);
-        debugBoard[4][3] =  new CheckersStone(4 ,3, StoneType.NULL);
-        debugBoard[4][4] =  new CheckersStone(4 ,4, StoneType.NULL);
-        debugBoard[4][5] =  new CheckersStone(4 ,5, StoneType.NULL);
-        debugBoard[4][6] =  new CheckersStone(4 ,6, StoneType.NULL);
-        debugBoard[4][7] =  new CheckersStone(4 ,7, StoneType.BLACK, true);
-
-        debugBoard[5][0] =  new CheckersStone(5 ,0, StoneType.NULL);
-        debugBoard[5][1] =  new CheckersStone(5 ,1, StoneType.NULL);
-        debugBoard[5][2] =  new CheckersStone(5 ,2, StoneType.NULL);
-        debugBoard[5][3] =  new CheckersStone(5 ,3, StoneType.NULL);
-        debugBoard[5][4] =  new CheckersStone(5 ,4, StoneType.NULL);
-        debugBoard[5][5] =  new CheckersStone(5 ,5, StoneType.NULL);
-        debugBoard[5][6] =  new CheckersStone(5 ,6, StoneType.NULL);
-        debugBoard[5][7] =  new CheckersStone(5 ,7, StoneType.NULL);
-
-        debugBoard[6][0] =  new CheckersStone(6 ,0, StoneType.NULL);
-        debugBoard[6][1] =  new CheckersStone(6 ,1, StoneType.NULL);
-        debugBoard[6][2] =  new CheckersStone(6 ,2, StoneType.NULL);
-        debugBoard[6][3] =  new CheckersStone(6 ,3, StoneType.BLACK, false);
-        debugBoard[6][4] =  new CheckersStone(6 ,4, StoneType.NULL);
-        debugBoard[6][5] =  new CheckersStone(6 ,5, StoneType.NULL);
-        debugBoard[6][6] =  new CheckersStone(6 ,6, StoneType.NULL);
-        debugBoard[6][7] =  new CheckersStone(6 ,7, StoneType.NULL);
-
-        debugBoard[7][0] =  new CheckersStone(7 ,0, StoneType.NULL);
-        debugBoard[7][1] =  new CheckersStone(7 ,1, StoneType.NULL);
-        debugBoard[7][2] =  new CheckersStone(7 ,2, StoneType.NULL);
-        debugBoard[7][3] =  new CheckersStone(7 ,3, StoneType.NULL);
-        debugBoard[7][4] =  new CheckersStone(7 ,4, StoneType.BLACK, true);
-        debugBoard[7][5] =  new CheckersStone(7 ,5, StoneType.NULL);
-        debugBoard[7][6] =  new CheckersStone(7 ,6, StoneType.BLACK, true);
-        debugBoard[7][7] =  new CheckersStone(7 ,7, StoneType.NULL);
-
-        initializeDataBoard(5,1, debugBoard);
     }
 }

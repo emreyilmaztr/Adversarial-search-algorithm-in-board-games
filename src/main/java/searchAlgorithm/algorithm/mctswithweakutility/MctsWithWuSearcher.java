@@ -74,10 +74,6 @@ public class MctsWithWuSearcher<A extends Action>{
             double alpha = Math.exp(gamma * n.numVisits);
             double ui = n.gameState.getUtility(n.parent.gameState.getTurn());
 
-            //double exploit = n.value / n.numVisits;
-            //double explore = (alpha * ui) + (1 - alpha) * C * Math.sqrt(Math.log(n.parent.numVisits)/n.numVisits);
-            //double explore = (alpha * ui) + (ui + 1) / 2 * C * Math.sqrt(Math.log(n.parent.numVisits)/n.numVisits);
-
             double exploit = (alpha * ui) + (1 - alpha) * n.numWin / n.numVisits;
             double explore = C * Math.sqrt(Math.log(n.parent.numVisits)/n.numVisits);
 
@@ -112,7 +108,7 @@ public class MctsWithWuSearcher<A extends Action>{
             A m = actions.get(getN);
             gameState.process(m, User.NULL);
         }
-        return gameState.getScoreMap();
+        return gameState.getUtilityMap();
     }
 
     private void backPropagate(Node<A> node, Map<User, Double> score) {

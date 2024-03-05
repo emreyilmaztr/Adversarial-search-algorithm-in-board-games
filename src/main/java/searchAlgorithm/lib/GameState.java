@@ -10,7 +10,6 @@ public abstract class GameState<A extends Action> {
     public abstract List<A> getLegalActions();
     public abstract Map<User, Double> getUtilityMap();
     public abstract double getUtility(User user);
-    public abstract Map<User, Double> getScoreMap();
     public abstract User getTurn();
     public abstract String toString();
     public abstract void reset();

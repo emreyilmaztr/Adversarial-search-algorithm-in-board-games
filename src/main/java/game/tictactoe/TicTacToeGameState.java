@@ -93,24 +93,6 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
     public TicTacToeGameState(int boardSize)
     {
         setUpState(boardSize);
-
-        /*
-        System.out.println("(0,0): " + getPosUtility(0,0, this.boardSize) );
-        System.out.println("(1,0): " + getPosUtility(1,0 ,this.boardSize) );
-        System.out.println("(2,0): " + getPosUtility(2,0 ,this.boardSize) );
-        System.out.println("(3,0): " + getPosUtility(3,0,this.boardSize) );
-        System.out.println("(4,0): " + getPosUtility(4,0,this.boardSize) );
-
-        System.out.println("(0,0): " + getPosUtility(0,0,this.boardSize) );
-        System.out.println("(0,1): " + getPosUtility(0,1,this.boardSize) );
-        System.out.println("(0,2): " + getPosUtility(0,2,this.boardSize) );
-        System.out.println("(0,3): " + getPosUtility(0,3,this.boardSize) );
-        System.out.println("(0,4): " + getPosUtility(0,4,this.boardSize) );
-
-        System.out.println("(1,1): " + getPosUtility(1,1,this.boardSize) );
-        System.out.println("(2,2): " + getPosUtility(2,2,this.boardSize) );
-        System.out.println("(3,3): " + getPosUtility(3,3,this.boardSize) );
-        System.out.println("(4,4): " + getPosUtility(4,4,this.boardSize) );*/
     }
     private void setUpState(int boardSize)
     {
@@ -319,11 +301,6 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
         return score;
     }
 
-    public Map<User, Double> getScoreMap() {
-        Map<User, Double> utilMap = getUtilityMap();
-        return getScoreMap(utilMap.get(User.ONE), utilMap.get(User.TWO) );
-    }
-
     @Override
     public User getTurn() {
         return turn;
@@ -451,28 +428,6 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
     public int getBoardSize() {
         return this.boardSize;
     }
-    private double getMaxPoint2(int boardSize)
-    {
-        if (boardSize == 3)      // Approved
-            return 3;
-        else if (boardSize == 4) // Approved
-            return 52.0;
-        else if (boardSize == 5) // Approved
-            return 88.0;
-        else if (boardSize == 6) // Approved
-            return 132.0;
-        else if (boardSize == 7) // Approved
-            return 86;
-        else if (boardSize == 8)
-            return 100;
-        else if (boardSize == 9)
-            return 120;
-        else if (boardSize == 10)
-            return 130;
-        else
-            return 1000;
-    }
-
     private double getMaxPoint(int boardSize)
     {
         if (boardSize == 3)      // Approved
@@ -480,7 +435,7 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
         else if (boardSize == 4) // Approved
             return 52.0;
         else if (boardSize == 5) // Approved
-            return 38.0;
+            return 88.0;
         else if (boardSize == 6) // Approved
             return 132.0;
         else if (boardSize == 7) // Approved

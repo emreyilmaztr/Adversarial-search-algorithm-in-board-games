@@ -99,7 +99,7 @@ public class MctsSearcher<A extends Action>{
             gameState.process(m, User.NULL);
         }
 
-        return gameState.getScoreMap();
+        return gameState.getUtilityMap();
     }
 
     private void backPropagate(Node<A> node, Map<User, Double> score) {

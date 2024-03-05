@@ -25,7 +25,6 @@ public class MangalaGameState extends GameState<MangalaAction> {
     private boolean joker;
     private boolean terminal;
     private int prevIndex;
-    final private double TOTAL_STONE_COUNT = 48;
     public MangalaGameState() {
         initialize();
     }
@@ -313,12 +312,6 @@ public class MangalaGameState extends GameState<MangalaAction> {
     @Override
     public double getUtility(User user) {
         return getUtilityMap().get(user);
-    }
-
-    @Override
-    public Map<User, Double> getScoreMap() {
-        Map<User, Double> utilMap = getUtilityMap();
-        return getScoreMap(utilMap.get(User.ONE), utilMap.get(User.TWO) );
     }
 
     public Map<User, Double> getScoreMap(double player1Score, double player2Score)

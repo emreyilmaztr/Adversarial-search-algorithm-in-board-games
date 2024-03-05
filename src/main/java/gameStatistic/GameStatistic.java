@@ -15,12 +15,11 @@ public class GameStatistic{
 
     public static void main(String[] args) {
 
-        int numOfIteration = 2000,  numOfRandAction = 0, gamePlayedInit = 200,  gamePlayedLimit = 2300, gamePlayedStep = 500, maxDepth = 5;
+        int numOfIteration = 5000,  numOfRandAction = 0, gamePlayedInit = 200,  gamePlayedLimit = 2000, gamePlayedStep = 300, maxDepth = 5;
         AlgorithmEnum alg1 = AlgorithmEnum.mcts;
         AlgorithmEnum alg2 = AlgorithmEnum.mctsWithWu;
         GameEnum game = null;
         GameState state = null;
-
 
         // Tic-Tac-Toe
         game= GameEnum.tictactoe;
