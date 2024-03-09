@@ -15,7 +15,7 @@ public class GameStatistic{
 
     public static void main(String[] args) {
 
-        int numOfIteration = 5000,  numOfRandAction = 0, gamePlayedInit = 200,  gamePlayedLimit = 2000, gamePlayedStep = 300, maxDepth = 5;
+        int numOfIteration = 7500,  numOfRandAction = 0, gamePlayedInit = 200,  gamePlayedLimit = 2000, gamePlayedStep = 300, maxDepth = 5;
         AlgorithmEnum alg1 = AlgorithmEnum.mcts;
         AlgorithmEnum alg2 = AlgorithmEnum.mctsWithWu;
         GameEnum game = null;
@@ -26,18 +26,16 @@ public class GameStatistic{
         state = getState(game, 5);
         getGameStatistic(game, state, alg1, alg2, numOfIteration, numOfRandAction, maxDepth, gamePlayedInit, gamePlayedLimit, gamePlayedStep, false);
 
-        // Checkers
-        game = GameEnum.checkers;
-        state = getState(game, 0);
-        getGameStatistic(game, state, alg1, alg2, numOfIteration, numOfRandAction, maxDepth, gamePlayedInit, gamePlayedLimit, gamePlayedStep, false);
-
         // Mangala
         game = GameEnum.mangala;
         state = getState(game, 0);
         getGameStatistic(game, state, alg1, alg2, numOfIteration, numOfRandAction, maxDepth, gamePlayedInit, gamePlayedLimit, gamePlayedStep, false);
 
+        // Checkers
+        game = GameEnum.checkers;
+        state = getState(game, 0);
+        getGameStatistic(game, state, alg1, alg2, numOfIteration, numOfRandAction, maxDepth, gamePlayedInit, gamePlayedLimit, gamePlayedStep, false);
     }
-
     public static GameState getState(GameEnum game, int boardSize)
     {
         GameState state = null;
