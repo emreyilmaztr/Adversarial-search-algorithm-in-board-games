@@ -23,30 +23,36 @@ public class GameStatistic{
         GameEnum game = null;
         GameState state = null;
 
-        int player1Param[] = {100, 500, 1000};
-        int player2Param[] = {5, 7, 9};
+        int tttMctsParam[] = {100, 500, 1000};
+        int tttABParam[]   = {4, 5};
+
+        int mangalaMctsParam[] = {100, 500, 1000};
+        int mangalaABParam[]   = {5, 7, 9, 10};
+
+        int checkersMctsParam[] = {100, 500, 1000};
+        int checkersABParam[]   = {5, 7, 8};
 
         // Tic-Tac-Toe
         game= GameEnum.tictactoe;
         state = getState(game, 5);
-        create2DimStats(game, state, mctsWithWu, alphaBeta, numOfIteration, numOfRandAction, player1Param, player2Param, false);
-        create2DimStats(game, state, mcts, alphaBeta, numOfIteration, numOfRandAction, player1Param, player2Param, false);
-        createDimStats(game, state, mcts, mctsWithWu, numOfIteration, numOfRandAction, player1Param, false);
+        create2DimStats(game, state, mctsWithWu, alphaBeta, numOfIteration, numOfRandAction, tttMctsParam, tttABParam, false);
+        create2DimStats(game, state, mcts, alphaBeta, numOfIteration, numOfRandAction, tttMctsParam, tttABParam, false);
+        createDimStats(game, state, mcts, mctsWithWu, numOfIteration, numOfRandAction, tttMctsParam, false);
 
         // Mangala
         game = GameEnum.mangala;
         state = getState(game, 0);
-        create2DimStats(game, state, mctsWithWu, alphaBeta, numOfIteration, numOfRandAction, player1Param, player2Param, false);
-        create2DimStats(game, state, mcts, alphaBeta, numOfIteration, numOfRandAction, player1Param, player2Param, false);
-        createDimStats(game, state, mcts, mctsWithWu, numOfIteration, numOfRandAction, player1Param, false);
+        create2DimStats(game, state, mctsWithWu, alphaBeta, numOfIteration, numOfRandAction, mangalaMctsParam, mangalaABParam, false);
+        create2DimStats(game, state, mcts, alphaBeta, numOfIteration, numOfRandAction, mangalaMctsParam, mangalaABParam, false);
+        createDimStats(game, state, mcts, mctsWithWu, numOfIteration, numOfRandAction, mangalaMctsParam, false);
 
 
         // Checkers
         game = GameEnum.checkers;
         state = getState(game, 0);
-        create2DimStats(game, state, mctsWithWu, alphaBeta, numOfIteration, numOfRandAction, player1Param, player2Param, false);
-        create2DimStats(game, state, mcts, alphaBeta, numOfIteration, numOfRandAction, player1Param, player2Param, false);
-        createDimStats(game, state, mcts, mctsWithWu, numOfIteration, numOfRandAction, player1Param, false);
+        create2DimStats(game, state, mctsWithWu, alphaBeta, numOfIteration, numOfRandAction, checkersMctsParam, checkersABParam, false);
+        create2DimStats(game, state, mcts, alphaBeta, numOfIteration, numOfRandAction, checkersMctsParam, checkersABParam, false);
+        createDimStats(game, state, mcts, mctsWithWu, numOfIteration, numOfRandAction, checkersMctsParam, false);
     }
     public static GameState getState(GameEnum game, int boardSize)
     {
