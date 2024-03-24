@@ -15,26 +15,38 @@ public class GameStatistic{
 
     public static void main(String[] args) {
 
-        int numOfIteration = 7500,  numOfRandAction = 0, gamePlayedInit = 200,  gamePlayedLimit = 2000, gamePlayedStep = 300, maxDepth = 5;
-        AlgorithmEnum alg1 = AlgorithmEnum.mcts;
-        AlgorithmEnum alg2 = AlgorithmEnum.mctsWithWu;
+        int numOfIteration = 1000,  numOfRandAction = 0;
+        AlgorithmEnum mctsWithWu = AlgorithmEnum.mctsWithWu;
+        AlgorithmEnum mcts = AlgorithmEnum.mcts;
+        AlgorithmEnum alphaBeta = AlgorithmEnum.alphaBeta;
+
         GameEnum game = null;
         GameState state = null;
+
+        int player1Param[] = {100, 500, 1000};
+        int player2Param[] = {5, 7, 9};
 
         // Tic-Tac-Toe
         game= GameEnum.tictactoe;
         state = getState(game, 5);
-        getGameStatistic(game, state, alg1, alg2, numOfIteration, numOfRandAction, maxDepth, gamePlayedInit, gamePlayedLimit, gamePlayedStep, false);
+        create2DimStats(game, state, mctsWithWu, alphaBeta, numOfIteration, numOfRandAction, player1Param, player2Param, false);
+        create2DimStats(game, state, mcts, alphaBeta, numOfIteration, numOfRandAction, player1Param, player2Param, false);
+        createDimStats(game, state, mcts, mctsWithWu, numOfIteration, numOfRandAction, player1Param, false);
 
         // Mangala
         game = GameEnum.mangala;
         state = getState(game, 0);
-        getGameStatistic(game, state, alg1, alg2, numOfIteration, numOfRandAction, maxDepth, gamePlayedInit, gamePlayedLimit, gamePlayedStep, false);
+        create2DimStats(game, state, mctsWithWu, alphaBeta, numOfIteration, numOfRandAction, player1Param, player2Param, false);
+        create2DimStats(game, state, mcts, alphaBeta, numOfIteration, numOfRandAction, player1Param, player2Param, false);
+        createDimStats(game, state, mcts, mctsWithWu, numOfIteration, numOfRandAction, player1Param, false);
+
 
         // Checkers
         game = GameEnum.checkers;
         state = getState(game, 0);
-        getGameStatistic(game, state, alg1, alg2, numOfIteration, numOfRandAction, maxDepth, gamePlayedInit, gamePlayedLimit, gamePlayedStep, false);
+        create2DimStats(game, state, mctsWithWu, alphaBeta, numOfIteration, numOfRandAction, player1Param, player2Param, false);
+        create2DimStats(game, state, mcts, alphaBeta, numOfIteration, numOfRandAction, player1Param, player2Param, false);
+        createDimStats(game, state, mcts, mctsWithWu, numOfIteration, numOfRandAction, player1Param, false);
     }
     public static GameState getState(GameEnum game, int boardSize)
     {
@@ -74,96 +86,37 @@ public class GameStatistic{
         System.out.println("Winner: " + winner);
     }
 
-    public static void playGameWithThread(GameEnum game, int boardSize, AlgorithmEnum alg1, AlgorithmEnum alg2, int numOfIteration, int numOfRandAction, int maxDepth, int gamePlayed, int gamePlayedLimit, int gamePlayedStep, boolean verbose)
-    {
-        Map<Integer, Map<User, Double>> totalScore = new HashMap<>();
-        List<GamePlayThread> threadList = new ArrayList<>();
-        for (int gp = gamePlayed; gp <= gamePlayedLimit; gp = gp + gamePlayedStep)
-        {
-            threadList.add(new GamePlayThread(game, getState(game, boardSize), alg1, alg2, numOfIteration, numOfRandAction, gp, verbose) );
-        }
-
-        // Start all thred
-        for(GamePlayThread thread : threadList)
-        {
-            thread.start();
-        }
-
-        // Wait until all threads are finished
-        for(GamePlayThread thread : threadList)
-        {
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        // Get result
-        for(GamePlayThread thread : threadList)
-        {
-            totalScore.put(thread.getGamePlayed(), thread.getScore());
-        }
-
-        // Parse filename
-        String fileName;
-        switch (game)
-        {
-            case tictactoe:
-            {
-                fileName = game.toString() + " - " + boardSize;
-                break;
-            }
-
-            case mangala, checkers:
-            {
-                fileName = game.toString();
-                break;
-            }
-
-            default:
-            {
-                fileName = "empty";
-                break;
-            }
-        }
-        // end of the switch;earth wall
-
-        // Write to excel file.
-        writeToExcel(fileName, alg1, alg2, gamePlayedStep, gamePlayedStep, totalScore);
-    }
-
-    public static void getGameStatistic(GameEnum game, GameState state, AlgorithmEnum alg1, AlgorithmEnum alg2, int numOfIteration, int numOfRandAction, int maxDepth, int gamePlayed, int gamePlayedLimit, int gamePlayedStep, boolean verbose)
+    public static void create2DimStats(GameEnum game, GameState state, AlgorithmEnum alg1, AlgorithmEnum alg2, int numOfIteration, int numOfRandAction, int[] player1Params, int[] player2Params, boolean verbose)
     {
         ZeroSumGame zeroSumGame = new ZeroSumGame();
-        Map<Integer, Map<User, Double>> totalScore = new HashMap<>();
+        Map< Integer, Map<User, Double> > totalScore = new HashMap<>();
 
         Random random = new Random();
         IPlayer player1, player2, randPlayer1, randPlayer2;
 
         Map<User, Double> score;
 
-        for (int gp = gamePlayed; gp <= gamePlayedLimit; gp = gp + gamePlayedStep)
+        final int defPairId = 1;
+        int pairId = defPairId;
+        for (int p1Param: player1Params)
         {
-            if (alg1 == AlgorithmEnum.mcts || alg1 == AlgorithmEnum.mctsWithWu)
-                player1 = PlayerSetting.initializePlayer(game, alg1, User.ONE, random, 1, gamePlayed);
-            else
-                player1 = PlayerSetting.initializePlayer(game, alg1, User.ONE, random, 1, maxDepth);
+            for (int p2Param: player2Params)
+            {
+                player1 = PlayerSetting.initializePlayer(game, alg1, User.ONE, random, 1, p1Param);
+                player2 = PlayerSetting.initializePlayer(game, alg2, User.TWO, random, 2, p2Param);
 
-            if (alg2 == AlgorithmEnum.mcts || alg2 == AlgorithmEnum.mctsWithWu)
-                player2 = PlayerSetting.initializePlayer(game, alg2, User.TWO, random, 2, gamePlayed);
-            else
-                player2 = PlayerSetting.initializePlayer(game, alg2, User.TWO, random, 2, maxDepth);
+                randPlayer1 = PlayerSetting.initializePlayer(game, AlgorithmEnum.random, User.ONE, random, 98, p1Param);
+                randPlayer2 = PlayerSetting.initializePlayer(game, AlgorithmEnum.random, User.TWO, random, 99, p2Param);
 
-            randPlayer1 = PlayerSetting.initializePlayer(game, AlgorithmEnum.random, User.ONE, random, 98, gamePlayed);
-            randPlayer2 = PlayerSetting.initializePlayer(game, AlgorithmEnum.random, User.TWO, random, 99, gamePlayed);
+                score = zeroSumGame.multiplePlayGame(numOfIteration, state, player1, player2, randPlayer1, randPlayer2, numOfRandAction, verbose);
 
-            score = zeroSumGame.multiplePlayGame(numOfIteration, state, player1, player2, randPlayer1, randPlayer2, numOfRandAction, verbose);
+                totalScore.put(pairId, score);
 
-            totalScore.put(gp, score);
+                System.out.println(game + " : " + "Player1: " + p1Param + " Player2: " + p2Param + " game played is completed ");
+                System.out.println(alg1.toString() + " : " + score.get(User.ONE) + " - " + alg2.toString() + " : " + score.get(User.TWO) );
 
-            System.out.println(game + " : " + gp + " game played is completed ");
-            System.out.println(alg1.toString() + " : " + score.get(User.ONE) + " - " + alg2.toString() + " : " + score.get(User.TWO) );
+                pairId++;
+            }
         }
 
         String fileName;
@@ -171,13 +124,13 @@ public class GameStatistic{
         {
             case tictactoe:
             {
-                fileName = game.toString() + " - " + state.getBoardSize() + "-" + alg1.getShortName() + "-" + alg2.getShortName();
+                fileName = game + " - " + state.getBoardSize() + "-" + alg1.getShortName() + "-" + alg2.getShortName();
                 break;
             }
 
             case mangala, checkers:
             {
-                fileName = game.toString() + "-" + alg1.getShortName() + "-" + alg2.getShortName();
+                fileName = game + "-" + alg1.getShortName() + "-" + alg2.getShortName();
                 break;
             }
 
@@ -189,52 +142,150 @@ public class GameStatistic{
         }
         // end of the switch;
 
-        writeToExcel(fileName, alg1, alg2, gamePlayed, gamePlayedStep, totalScore);
+        writeMatrixToExcel(fileName, alg1, alg2, player1Params, player2Params, defPairId, totalScore);
     }
 
-    public static void writeToExcel(String filename, AlgorithmEnum alg1,  AlgorithmEnum alg2, int gp, int gpStep, Map<Integer, Map<User, Double>> totalScore) {
+    public static void createDimStats(GameEnum game, GameState state, AlgorithmEnum alg1, AlgorithmEnum alg2, int numOfIteration, int numOfRandAction, int[] playerParams, boolean verbose)
+    {
+        ZeroSumGame zeroSumGame = new ZeroSumGame();
+        Map< Integer, Map<User, Double> > totalScore = new HashMap<>();
+
+        Random random = new Random();
+        IPlayer player1, player2, randPlayer1, randPlayer2;
+
+        Map<User, Double> score;
+
+        for (int param: playerParams)
+        {
+            player1 = PlayerSetting.initializePlayer(game, alg1, User.ONE, random, 1, param);
+            player2 = PlayerSetting.initializePlayer(game, alg2, User.TWO, random, 2, param);
+
+            randPlayer1 = PlayerSetting.initializePlayer(game, AlgorithmEnum.random, User.ONE, random, 98, param);
+            randPlayer2 = PlayerSetting.initializePlayer(game, AlgorithmEnum.random, User.TWO, random, 99, param);
+
+            score = zeroSumGame.multiplePlayGame(numOfIteration, state, player1, player2, randPlayer1, randPlayer2, numOfRandAction, verbose);
+
+            totalScore.put(param, score);
+
+            System.out.println(game + " : " + param + " game played is completed ");
+            System.out.println(alg1.toString() + " : " + score.get(User.ONE) + " - " + alg2.toString() + " : " + score.get(User.TWO) );
+        }
+
+        String fileName;
+        switch (game)
+        {
+            case tictactoe:
+            {
+                fileName = game + " - " + state.getBoardSize() + "-" + alg1.getShortName() + "-" + alg2.getShortName();
+                break;
+            }
+
+            case mangala, checkers:
+            {
+                fileName = game + "-" + alg1.getShortName() + "-" + alg2.getShortName();
+                break;
+            }
+
+            default:
+            {
+                fileName = "empty";
+                break;
+            }
+        }
+        // end of the switch;
+
+        writeVectorToExcel(fileName, alg1, alg2, playerParams, totalScore);
+    }
+
+    public static void writeMatrixToExcel(String filename, AlgorithmEnum alg1,  AlgorithmEnum alg2, int[] player1Params, int[] player2Params, int defPairId, Map< Integer, Map<User, Double> > totalScore) {
         Workbook workbook = new Workbook();
 
         // Obtain the reference of the first worksheet
         Worksheet worksheet = workbook.getWorksheets().get(0);
 
-        // Add sample values to cells
+        // Add Algorithm info
+        worksheet.getCells().get("A1").putValue(alg1.toString() + " / " + alg2.toString());
+
+        // Add player1 params
+        String player1ParamPosix = "A", player1Param;
+        for (int i = 0; i < player1Params.length; i++)
+        {
+            player1Param = player1ParamPosix + (i + 2);
+            worksheet.getCells().get(player1Param).putValue(player1Params[i]);
+        }
+
+        // Add player2 params
+        char player2ParamPosix = 'B';
+        String player2Param;
+        for (int i = 0; i < player2Params.length; i++)
+        {
+            player2Param = String.valueOf( (char) (player2ParamPosix  + i) );
+            player2Param = player2Param + 1;
+            worksheet.getCells().get(player2Param).putValue(player2Params[i]);
+        }
+
+        int scoreRow = 2;
+        String scoreCell;
+        for (int p1Param: player1Params)
+        {
+            char scoreCol = 'B';
+
+            for (int p2Param : player2Params)
+            {
+                // Find cell
+                scoreCell = String.valueOf(scoreCol) + scoreRow;
+                // Get score
+                Map<User, Double> score = totalScore.get(defPairId);
+                // Write value
+                worksheet.getCells().get(scoreCell).putValue(score.get(User.ONE) + " / " + score.get(User.TWO));
+
+                scoreCol = (char)(scoreCol + 1);
+
+                defPairId = defPairId + 1;
+            }
+            scoreRow++;
+        }
+
+        String writeFilename = "Matrix "+ filename + ".xls";
+
+        // Save the Excel file
+        try {
+            workbook.save(writeFilename, SaveFormat.XLSX);
+            System.out.println("Statistics are written in " + writeFilename);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void writeVectorToExcel(String filename, AlgorithmEnum alg1,  AlgorithmEnum alg2, int[] playerParams, Map<Integer, Map<User, Double>> totalScore) {
+        Workbook workbook = new Workbook();
+
+        // Obtain the reference of the first worksheet
+        Worksheet worksheet = workbook.getWorksheets().get(0);
+
+        // Write algorithm info to cells
         worksheet.getCells().get("B1").putValue(alg1.toString());
         worksheet.getCells().get("C1").putValue(alg2.toString());
 
-        final String gpPosix = "A", alg1Posix = "B", alg2Posix = "C";
-        String gpCol, alg1Col, alg2Col;
+        int startRow = 2;
+        String paramPosix = "A", alg1Posix = "B", alg2Posix = "C", paramCell, alg1Cell, alg2Cell;
 
-        String endCol = alg2Posix + (totalScore.size() + 1);
-
-        int gamePlayed = gp;
-
-        for (int i = 0; i < totalScore.size(); i++)
+        for (int param: playerParams)
         {
-            gpCol   = gpPosix   + (i + 2);
-            alg1Col = alg1Posix + (i + 2);
-            alg2Col = alg2Posix + (i + 2);
+            paramCell = paramPosix + startRow;
+            alg1Cell  = alg1Posix  + startRow;
+            alg2Cell  = alg2Posix  + startRow;
 
-            Map<User, Double> score = totalScore.get(gamePlayed);
+            Map<User, Double> score = totalScore.get(param);
 
-            worksheet.getCells().get(gpCol).putValue(gamePlayed);
-            worksheet.getCells().get(alg1Col).putValue(score.get(User.ONE));
-            worksheet.getCells().get(alg2Col).putValue(score.get(User.TWO));
+            worksheet.getCells().get(paramCell).putValue(param);
+            worksheet.getCells().get(alg1Cell).putValue(score.get(User.ONE));
+            worksheet.getCells().get(alg2Cell).putValue(score.get(User.TWO));
 
-            gamePlayed = gamePlayed + gpStep;
+            startRow = startRow + 1;
         }
 
-
-        // Add a chart to the worksheet
-        int chartIndex = worksheet.getCharts().add(ChartType.LINE, 5, 0, 15, 5);
-
-        // Access the instance of the newly added chart
-        Chart chart = worksheet.getCharts().get(chartIndex);
-
-        // Set chart data source as the range "A1:C4"
-        chart.setChartDataRange("A1:" + endCol, true);
-
-        String writeFilename = filename + ".xls";
+        String writeFilename = "Vector " + filename + ".xls";
 
         // Save the Excel file
         try {
