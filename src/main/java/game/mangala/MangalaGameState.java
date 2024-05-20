@@ -27,6 +27,9 @@ public class MangalaGameState extends GameState<MangalaAction> {
     private boolean terminal;
     private int prevIndex;
     private UtilityEnum utility;
+    private final double MIN_TREASURE = 0;
+    private final double MAX_TREASURE = 48;
+
     public MangalaGameState(UtilityEnum utility) {
         initialize(utility);
     }
@@ -291,6 +294,7 @@ public class MangalaGameState extends GameState<MangalaAction> {
 
     public Map<User, Double> getUtilityMap1() {
 
+        // -1, 1
         double player1Score = normalize(playerTreasure, opponentTreasure);
         double player2Score = normalize(opponentTreasure, playerTreasure);
 
@@ -311,8 +315,9 @@ public class MangalaGameState extends GameState<MangalaAction> {
 
     public Map<User, Double> getUtilityMap2() {
 
-        double player1Score = normalize(playerTreasure, opponentTreasure);
-        double player2Score = normalize(opponentTreasure, playerTreasure);
+        // 0, 1
+        double player1Score = (playerTreasure - MIN_TREASURE) / (MAX_TREASURE - MIN_TREASURE);
+        double player2Score = (opponentTreasure - MIN_TREASURE) / (MAX_TREASURE - MIN_TREASURE);
 
         Map<User, Double> score = new HashMap<User, Double>();
 

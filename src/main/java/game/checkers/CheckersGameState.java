@@ -522,6 +522,65 @@ public class CheckersGameState extends GameState<CheckersAction> {
         double blckKingStoneCount = 0, whtKingStoneCount = 0;
         double blckNonKingStoneCount = 0, whtNonKingStoneCount = 0;
 
+        for (int row = 0; row < BOARD_HEIGHT; row++)
+        {
+            for (int col = 0; col < BOARD_WIDTH; col++)
+            {
+                if (board[row][col].type == StoneType.BLACK)
+                {
+                    if (board[row][col].isKing)
+                    {
+                        blckKingStoneCount++;
+                    }
+                    else
+                    {
+                        blckNonKingStoneCount++;
+                    }
+                }
+                else if (board[row][col].type == StoneType.WHITE)
+                {
+                    if (board[row][col].isKing)
+                    {
+                        whtKingStoneCount++;
+                    }
+                    else
+                    {
+                        whtNonKingStoneCount++;
+                    }
+                }
+            }
+        }
+
+
+        double blckStoneCount = (blckNonKingStoneCount) + (1.5 * blckKingStoneCount);
+        double whtStoneCount  = (whtNonKingStoneCount)  + (1.5 * whtKingStoneCount);
+
+        final double MAX_STONE = 12;
+        final double MIN_STONE = 0;
+
+        double player1Score = (blckStoneCount - MIN_STONE) / (MAX_STONE - MIN_STONE);
+        double player2Score = (whtStoneCount - MIN_STONE) / (MAX_STONE - MIN_STONE);
+
+        if (this.terminal == true)
+        {
+            score = getScoreMap(player1Score, player2Score);
+        }
+        else
+        {
+            score.put(User.ONE, player1Score);
+            score.put(User.TWO, player2Score);
+        }
+
+        return score;
+    }
+
+    public Map<User, Double> getUtilityMap4() {
+
+        Map<User, Double> score = new HashMap<>();
+
+        double blckKingStoneCount = 0, whtKingStoneCount = 0;
+        double blckNonKingStoneCount = 0, whtNonKingStoneCount = 0;
+
         // Distance to king position
         double blckDist2King = 0, whtDist2King = 0;
         double MAX_DIST = this.BOARD_HEIGHT - 1;

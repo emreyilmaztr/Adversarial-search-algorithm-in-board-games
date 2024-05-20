@@ -90,6 +90,7 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
     private boolean terminal;
     private final int MIN_BLOCK_SIZE = 3;
     private double MAX_POINT;
+    private double TOTAL_MAX_POINT;
     private UtilityEnum utility;
 
     public TicTacToeGameState(int boardSize, UtilityEnum utility)
@@ -111,6 +112,7 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
         this.turn = User.ONE;
         this.terminal = false;
         this.MAX_POINT = getMaxPoint(boardSize);
+        this.TOTAL_MAX_POINT = getTotalMaxPoint(boardSize);
     }
 
     // copy constructor.
@@ -130,6 +132,7 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
         this.turn = b.turn;
         this.terminal = b.terminal;
         this.MAX_POINT = b.MAX_POINT;
+        this.TOTAL_MAX_POINT = b.TOTAL_MAX_POINT;
     }
     @Override
     public GameState<TicTacToeAction> getDeepCopy() {
@@ -253,8 +256,7 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
         return score;
     }
 
-    @Override
-    public Map<User, Double> getUtilityMap()
+    public Map<User, Double> getUtilityMap1()
     {
         Map<User, Double> score = new HashMap<User, Double>();
         Map<User, Double> scoreMap = getScoreMap(3);
@@ -273,6 +275,69 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
         }
 
         return score;
+    }
+
+    public Map<User, Double> getUtilityMap2()
+    {
+        Map<User, Double> score = new HashMap<User, Double>();
+        Map<User, Double> scoreMap = getScoreMap(3);
+
+        double player1Score = scoreMap.get(User.ONE) / MAX_POINT;
+        double player2Score = scoreMap.get(User.TWO) / MAX_POINT;
+
+        if (this.terminal == true)
+        {
+            score = getScoreMap(player1Score, player2Score);
+        }
+        else
+        {
+            score.put(User.ONE, player1Score);
+            score.put(User.TWO, player2Score);
+        }
+
+        return score;
+    }
+
+    public Map<User, Double> getUtilityMap3()
+    {
+        Map<User, Double> score = new HashMap<User, Double>();
+        Map<User, Double> scoreMap = getScoreMap(3);
+
+        double player1Score = scoreMap.get(User.ONE) / TOTAL_MAX_POINT;
+        double player2Score = scoreMap.get(User.TWO) / TOTAL_MAX_POINT;
+
+        if (this.terminal == true)
+        {
+            score = getScoreMap(player1Score, player2Score);
+        }
+        else
+        {
+            score.put(User.ONE, player1Score);
+            score.put(User.TWO, player2Score);
+        }
+
+        return score;
+    }
+
+    @Override
+    public Map<User, Double> getUtilityMap()
+    {
+        if (this.utility == UtilityEnum.UTILITY_1)
+        {
+            return getUtilityMap1();
+        }
+        else if (this.utility == UtilityEnum.UTILITY_2)
+        {
+            return getUtilityMap2();
+        }
+        else if (this.utility == UtilityEnum.UTILITY_3)
+        {
+            return getUtilityMap3();
+        }
+        else
+        {
+            return getUtilityMap1();
+        }
     }
 
     private double normalize(double score1, double score2) {
@@ -433,6 +498,28 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
         return this.boardSize;
     }
     private double getMaxPoint(int boardSize)
+    {
+        if (boardSize == 3)      // Approved
+            return 3.0;
+        else if (boardSize == 4) // Approved
+            return 18.0;
+        else if (boardSize == 5) // Approved
+            return 40.0;
+        else if (boardSize == 6) // Approved
+            return 59.0;
+        else if (boardSize == 7) // Approved
+            return 86;
+        else if (boardSize == 8)
+            return 100;
+        else if (boardSize == 9)
+            return 120;
+        else if (boardSize == 10)
+            return 130;
+        else
+            return 1000;
+    }
+
+    private double getTotalMaxPoint(int boardSize)
     {
         if (boardSize == 3)      // Approved
             return 3;
