@@ -1,4 +1,5 @@
 package game.tictactoe;
+import searchAlgorithm.lib.UtilityEnum;
 import searchAlgorithm.lib.User;
 import searchAlgorithm.lib.GameState;
 
@@ -89,13 +90,15 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
     private boolean terminal;
     private final int MIN_BLOCK_SIZE = 3;
     private double MAX_POINT;
+    private UtilityEnum utility;
 
-    public TicTacToeGameState(int boardSize)
+    public TicTacToeGameState(int boardSize, UtilityEnum utility)
     {
-        setUpState(boardSize);
+        initialize(boardSize, utility);
     }
-    private void setUpState(int boardSize)
+    private void initialize(int boardSize, UtilityEnum utility)
     {
+        this.utility = utility;
         this.boardSize = boardSize;
         this.board = new TicTacToeStone[boardSize][boardSize];
 
@@ -113,6 +116,7 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
     // copy constructor.
     private TicTacToeGameState(TicTacToeGameState b)
     {
+        this.utility = b.utility;
         this.boardSize = b.boardSize;
         this.board = new TicTacToeStone[boardSize][boardSize];
 
@@ -307,7 +311,7 @@ public class TicTacToeGameState extends GameState<TicTacToeAction> {
     }
     public void reset()
     {
-        setUpState(this.boardSize);
+        initialize(this.boardSize, this.utility);
     }
 
     public String toString()

@@ -5,6 +5,7 @@ import com.aspose.cells.*;
 import game.checkers.CheckersGameState;
 import game.mangala.MangalaGameState;
 import game.tictactoe.TicTacToeGameState;
+import searchAlgorithm.lib.UtilityEnum;
 import searchAlgorithm.lib.GameState;
 import searchAlgorithm.lib.IPlayer;
 import searchAlgorithm.lib.User;
@@ -19,54 +20,63 @@ public class GameStatistic{
         AlgorithmEnum mctsWithWu = AlgorithmEnum.mctsWithWu;
         AlgorithmEnum mcts = AlgorithmEnum.mcts;
         AlgorithmEnum alphaBeta = AlgorithmEnum.alphaBeta;
+        UtilityEnum utility = UtilityEnum.UTILITY_1;
 
         GameEnum game = null;
         GameState state = null;
 
-        int tttMctsParam[] = {100, 500, 1000};
+        int tttMctsParam[] = {1500};
         int tttABParam[]   = {4, 5};
 
-        int mangalaMctsParam[] = {100, 500, 1000};
-        int mangalaABParam[]   = {5, 7, 9, 10};
+        int mangalaMctsParam[] = {100, 500, 1000, 1500};
+        int mangalaABParam[]   = {5,9,11};
 
-        int checkersMctsParam[] = {100, 500, 1000};
+        int checkersMctsParam[] = {100, 500, 1000, 1500};
         int checkersABParam[]   = {5, 7, 8};
+
+        int mctsParam[] = {200, 600, 1000};
 
         // Tic-Tac-Toe
         game= GameEnum.tictactoe;
-        state = getState(game, 5);
-        create2DimStats(game, state, mctsWithWu, alphaBeta, numOfIteration, numOfRandAction, tttMctsParam, tttABParam, false);
-        create2DimStats(game, state, mcts, alphaBeta, numOfIteration, numOfRandAction, tttMctsParam, tttABParam, false);
-        createDimStats(game, state, mcts, mctsWithWu, numOfIteration, numOfRandAction, tttMctsParam, false);
+        state = getState(game, utility, 5);
+        //createDimStats(game, state, mcts, mctsWithWu, numOfIteration, numOfRandAction, mctsParam, false);
+        //create2DimStats(game, state, mctsWithWu, alphaBeta, numOfIteration, numOfRandAction, tttMctsParam, tttABParam, false);
+        // Random action
+        //createDimStats(game, state, mcts, mctsWithWu, numOfIteration, 5, mctsParam, false);
 
         // Mangala
         game = GameEnum.mangala;
-        state = getState(game, 0);
-        create2DimStats(game, state, mctsWithWu, alphaBeta, numOfIteration, numOfRandAction, mangalaMctsParam, mangalaABParam, false);
-        create2DimStats(game, state, mcts, alphaBeta, numOfIteration, numOfRandAction, mangalaMctsParam, mangalaABParam, false);
-        createDimStats(game, state, mcts, mctsWithWu, numOfIteration, numOfRandAction, mangalaMctsParam, false);
+        state = getState(game, utility, 0);
+        //createDimStats(game, state, mcts, mctsWithWu, numOfIteration, numOfRandAction, mctsParam, false);
+        //create2DimStats(game, state, mctsWithWu, alphaBeta, numOfIteration, numOfRandAction, mangalaMctsParam, mangalaABParam, false);
 
+        // Random action
+        //createDimStats(game, state, mcts, mctsWithWu, numOfIteration, 5, mctsParam, false);
 
         // Checkers
         game = GameEnum.checkers;
-        state = getState(game, 0);
-        create2DimStats(game, state, mctsWithWu, alphaBeta, numOfIteration, numOfRandAction, checkersMctsParam, checkersABParam, false);
-        create2DimStats(game, state, mcts, alphaBeta, numOfIteration, numOfRandAction, checkersMctsParam, checkersABParam, false);
-        createDimStats(game, state, mcts, mctsWithWu, numOfIteration, numOfRandAction, checkersMctsParam, false);
+        state = getState(game, utility, 0);
+        //createDimStats(game, state, UtilityEnum.UTILITY_1, mcts, mctsWithWu, numOfIteration, numOfRandAction, mctsParam, false);
+        //createDimStats(game, state, UtilityEnum.UTILITY_2, mcts, mctsWithWu, numOfIteration, numOfRandAction, mctsParam, false);
+        createDimStats(game, state, UtilityEnum.UTILITY_3, mcts, mctsWithWu, numOfIteration, numOfRandAction, mctsParam, false);
+        //create2DimStats(game, state, mctsWithWu, alphaBeta, numOfIteration, numOfRandAction, checkersMctsParam, checkersABParam, false);
+
+        // Random action
+        //createDimStats(game, state, mcts, mctsWithWu, numOfIteration, 5, mctsParam, false);
     }
-    public static GameState getState(GameEnum game, int boardSize)
+    public static GameState getState(GameEnum game, UtilityEnum utility, int boardSize)
     {
         GameState state = null;
         switch (game)
         {
             case tictactoe:
-                state = new TicTacToeGameState(boardSize);
+                state = new TicTacToeGameState(boardSize, utility);
                 break;
             case checkers:
-                state = new CheckersGameState();
+                state = new CheckersGameState(utility);
                 break;
             case mangala:
-                state = new MangalaGameState();
+                state = new MangalaGameState(utility);
                 break;
         }
         // end of the case.
@@ -92,7 +102,7 @@ public class GameStatistic{
         System.out.println("Winner: " + winner);
     }
 
-    public static void create2DimStats(GameEnum game, GameState state, AlgorithmEnum alg1, AlgorithmEnum alg2, int numOfIteration, int numOfRandAction, int[] player1Params, int[] player2Params, boolean verbose)
+    public static void create2DimStats(GameEnum game, GameState state, UtilityEnum utility, AlgorithmEnum alg1, AlgorithmEnum alg2, int numOfIteration, int numOfRandAction, int[] player1Params, int[] player2Params, boolean verbose)
     {
         ZeroSumGame zeroSumGame = new ZeroSumGame();
         Map< Integer, Map<User, Double> > totalScore = new HashMap<>();
@@ -151,7 +161,7 @@ public class GameStatistic{
         writeMatrixToExcel(fileName, alg1, alg2, player1Params, player2Params, defPairId, totalScore);
     }
 
-    public static void createDimStats(GameEnum game, GameState state, AlgorithmEnum alg1, AlgorithmEnum alg2, int numOfIteration, int numOfRandAction, int[] playerParams, boolean verbose)
+    public static void createDimStats(GameEnum game, GameState state, UtilityEnum utility, AlgorithmEnum alg1, AlgorithmEnum alg2, int numOfIteration, int numOfRandAction, int[] playerParams, boolean verbose)
     {
         ZeroSumGame zeroSumGame = new ZeroSumGame();
         Map< Integer, Map<User, Double> > totalScore = new HashMap<>();
@@ -182,13 +192,13 @@ public class GameStatistic{
         {
             case tictactoe:
             {
-                fileName = game + " - " + state.getBoardSize() + "-" + alg1.getShortName() + "-" + alg2.getShortName();
+                fileName = game + " - " + utility.toString() + "-" + state.getBoardSize() + "-" + alg1.getShortName() + "-" + alg2.getShortName();
                 break;
             }
 
             case mangala, checkers:
             {
-                fileName = game + "-" + alg1.getShortName() + "-" + alg2.getShortName();
+                fileName = game + "-" + utility.toString() + "-" + alg1.getShortName() + "-" + alg2.getShortName();
                 break;
             }
 

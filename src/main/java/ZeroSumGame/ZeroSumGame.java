@@ -73,7 +73,7 @@ public class ZeroSumGame{
         // If number of random iteration is greater 0, play n step with random player
         for (int i = 0; i < numOfRandAction; i++)
         {
-            playOneStep(gameState, randPlayer1, randPlayer2, verbose);
+            playOneStep(gameState, randPlayer1, randPlayer2, verbose, false);
         }
 
         if (verbose)
@@ -169,15 +169,30 @@ public class ZeroSumGame{
             prevScore = gameState.getUtilityMap();
         }
     }
-    private void playOneStep(GameState gameState, IPlayer player1, IPlayer player2, boolean verbose)
+    public void playOneStep(GameState gameState, IPlayer player1, IPlayer player2, boolean verbose, boolean showTime)
     {
+        long start = 0, end = 0;
         if (gameState.isTerminal() == false)
         {
+            //start = System.nanoTime();
+            start = System.currentTimeMillis();
             takeAction(gameState, player1, verbose);
+            //end = System.nanoTime();
+            end = System.currentTimeMillis();
+
+            if(showTime)
+                System.out.println("Player1: Elapsed Time in milli seconds: "+ (end-start));
 
             if (gameState.isTerminal() == false)
             {
+                //start = System.nanoTime();
+                start = System.currentTimeMillis();
                 takeAction(gameState, player2, verbose);
+                //end = System.nanoTime();
+                end = System.currentTimeMillis();
+
+                if(showTime)
+                    System.out.println("Player2: Elapsed Time in milli seconds: "+ (end-start));
             }
         }
     }
@@ -185,7 +200,7 @@ public class ZeroSumGame{
     {
         System.out.println(gameState.toString());
     }
-    private User showResult(GameState gameState, IPlayer player1, IPlayer player2, boolean verbose)
+    public User showResult(GameState gameState, IPlayer player1, IPlayer player2, boolean verbose)
     {
         Map<User, Double> score = gameState.getUtilityMap();
 

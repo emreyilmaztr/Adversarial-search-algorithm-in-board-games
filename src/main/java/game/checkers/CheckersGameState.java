@@ -1,4 +1,5 @@
 package game.checkers;
+import searchAlgorithm.lib.UtilityEnum;
 import searchAlgorithm.lib.User;
 import searchAlgorithm.lib.GameState;
 
@@ -13,15 +14,17 @@ public class CheckersGameState extends GameState<CheckersAction> {
     private int blackStoneCount;
     private int whiteStoneCount;
     final private int STONE_COUNT = 12;
+    private UtilityEnum utility;
 
-    public CheckersGameState()
+    public CheckersGameState(UtilityEnum utility)
     {
-        initializeData();
+        initializeData(utility);
         initializeBoard();
     }
 
-    private void initializeData()
+    private void initializeData(UtilityEnum utility)
     {
+        this.utility = utility;
         this.blackStoneCount = STONE_COUNT;
         this.whiteStoneCount = STONE_COUNT;
 
@@ -59,6 +62,7 @@ public class CheckersGameState extends GameState<CheckersAction> {
     // copy constructor.
     private CheckersGameState(CheckersGameState b)
     {
+        this.utility = b.utility;
         this.whiteStoneCount = b.whiteStoneCount;
         this.blackStoneCount = b.blackStoneCount;
 
@@ -419,14 +423,49 @@ public class CheckersGameState extends GameState<CheckersAction> {
         return getLegalActions(type);
     }
 
-    @Override
-    public Map<User, Double> getUtilityMap() {
+    public Map<User, Double> getEasyUtilityMap() {
+
+        Map<User, Double> score = new HashMap<>();
+
+        double blckStoneCount = 0, whtStoneCount = 0;
+
+        for (int row = 0; row < BOARD_HEIGHT; row++)
+        {
+            for (int col = 0; col < BOARD_WIDTH; col++)
+            {
+                if (board[row][col].type == StoneType.BLACK)
+                {
+                    blckStoneCount++;
+                }
+                else if (board[row][col].type == StoneType.WHITE)
+                {
+                    whtStoneCount++;
+                }
+            }
+        }
+
+        double player1Score = normalize(blckStoneCount, whtStoneCount);
+        double player2Score = normalize(whtStoneCount, blckStoneCount);
+
+        if (this.terminal == true)
+        {
+            score = getScoreMap(player1Score, player2Score);
+        }
+        else
+        {
+            score.put(User.ONE, player1Score);
+            score.put(User.TWO, player2Score);
+        }
+
+        return score;
+    }
+
+    public Map<User, Double> getMediumUtilityMap() {
 
         Map<User, Double> score = new HashMap<>();
 
         double blckKingStoneCount = 0, whtKingStoneCount = 0;
         double blckNonKingStoneCount = 0, whtNonKingStoneCount = 0;
-
 
         for (int row = 0; row < BOARD_HEIGHT; row++)
         {
@@ -474,6 +513,95 @@ public class CheckersGameState extends GameState<CheckersAction> {
         }
 
         return score;
+    }
+
+    public Map<User, Double> getHardUtilityMap() {
+
+        Map<User, Double> score = new HashMap<>();
+
+        double blckKingStoneCount = 0, whtKingStoneCount = 0;
+        double blckNonKingStoneCount = 0, whtNonKingStoneCount = 0;
+
+        // Distance to king position
+        double blckDist2King = 0, whtDist2King = 0;
+        double MAX_DIST = this.BOARD_HEIGHT - 1;
+
+        for (int row = 0; row < BOARD_HEIGHT; row++)
+        {
+            for (int col = 0; col < BOARD_WIDTH; col++)
+            {
+                if (board[row][col].type == StoneType.BLACK)
+                {
+                    if (board[row][col].isKing)
+                    {
+                        blckKingStoneCount++;
+                    }
+                    else
+                    {
+                        blckNonKingStoneCount++;
+                        blckDist2King += board[row][col].checkerPoint.getRow();
+                    }
+                }
+                else if (board[row][col].type == StoneType.WHITE)
+                {
+                    if (board[row][col].isKing)
+                    {
+                        whtKingStoneCount++;
+                    }
+                    else
+                    {
+                        whtNonKingStoneCount++;
+                        whtDist2King += MAX_DIST - board[row][col].checkerPoint.getRow();
+                    }
+                }
+            }
+        }
+
+        double ESP = 0.0001;
+        double blckAvgDistToKing = blckDist2King / (blckNonKingStoneCount + ESP);
+        double whtAvgDistToKing  = whtDist2King /  (whtNonKingStoneCount + ESP);
+
+        double blckDistToKingPnt = (blckAvgDistToKing < ESP) ? 0 : (MAX_DIST - blckAvgDistToKing) / MAX_DIST;
+        double whtDistToKingPnt = (whtAvgDistToKing < ESP) ? 0 : (MAX_DIST - whtAvgDistToKing) / MAX_DIST;
+
+        double blckStoneCount = (blckNonKingStoneCount + blckDistToKingPnt) + (1.5 * blckKingStoneCount);
+        double whtStoneCount  = (whtNonKingStoneCount + whtDistToKingPnt)  + (1.5 * whtKingStoneCount);
+
+        double player1Score = normalize(blckStoneCount, whtStoneCount);
+        double player2Score = normalize(whtStoneCount, blckStoneCount);
+
+        if (this.terminal == true)
+        {
+            score = getScoreMap(player1Score, player2Score);
+        }
+        else
+        {
+            score.put(User.ONE, player1Score);
+            score.put(User.TWO, player2Score);
+        }
+
+        return score;
+    }
+
+    @Override
+    public Map<User, Double> getUtilityMap() {
+
+        if (this.utility == UtilityEnum.UTILITY_1)
+        {
+            return getEasyUtilityMap();
+        }
+        else if (this.utility == UtilityEnum.UTILITY_2)
+        {
+            return getMediumUtilityMap();
+        }
+        else if (this.utility == UtilityEnum.UTILITY_3)
+        {
+            return getHardUtilityMap();
+        }
+        else
+        {
+            return getEasyUtilityMap();
+        }
     }
 
     private double normalize(double score1, double score2) {
@@ -544,7 +672,7 @@ public class CheckersGameState extends GameState<CheckersAction> {
 
     public void reset()
     {
-        initializeData();
+        initializeData(this.utility);
         initializeBoard();
     }
 

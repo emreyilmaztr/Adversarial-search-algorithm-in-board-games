@@ -11,6 +11,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import searchAlgorithm.lib.UtilityEnum;
 import searchAlgorithm.lib.IPlayer;
 import searchAlgorithm.lib.GameState;
 import searchAlgorithm.lib.User;
@@ -22,6 +23,8 @@ import java.util.ResourceBundle;
 public class GameFormController implements Initializable {
     @FXML
     private ChoiceBox<GameEnum> gameCb;
+    @FXML
+    private ChoiceBox<UtilityEnum> gameLevelCb;
     @FXML
     private ChoiceBox<Integer> boardSizeCb;
     @FXML
@@ -57,13 +60,14 @@ public class GameFormController implements Initializable {
     private GameState gameState;
     private IPlayer player1, player2, randomPlayer1, randomPlayer2;
     private Thread th;
-
+    private GameTask gameTask;
     private boolean isGameStarted;
 
     private Integer boardSizeArr[] = {3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
+        this.gameTask = null;
         this.isGameStarted = false;
 
         // set up board size label
@@ -91,6 +95,9 @@ public class GameFormController implements Initializable {
                         boardSizeLbl.setVisible(false);
                     }
                 });
+
+        gameLevelCb.getItems().addAll(UtilityEnum.values());
+        gameLevelCb.setValue(UtilityEnum.UTILITY_1);
 
         // set up player 1 algorithm selection choice box
         player1AlgorithmCb.getItems().addAll(AlgorithmEnum.values());
@@ -153,7 +160,7 @@ public class GameFormController implements Initializable {
         {
             case tictactoe:
             {
-                gameState = new TicTacToeGameState(boardSizeCb.getValue().intValue());
+                gameState = new TicTacToeGameState(boardSizeCb.getValue().intValue(), gameLevelCb.getValue());
                 player1 = PlayerSetting.initializePlayer(GameEnum.tictactoe, player1AlgorithmCb.getValue(), User.ONE, random,1, player1InputVal);
                 player2 = PlayerSetting.initializePlayer(GameEnum.tictactoe, player2AlgorithmCb.getValue(), User.TWO, random,2, player2InputVal);
 
@@ -164,7 +171,7 @@ public class GameFormController implements Initializable {
             }
             case checkers:
             {
-                gameState = new CheckersGameState();
+                gameState = new CheckersGameState(gameLevelCb.getValue());
                 player1 = PlayerSetting.initializePlayer(GameEnum.checkers, player1AlgorithmCb.getValue(), User.ONE, random,1, player1InputVal);
                 player2 = PlayerSetting.initializePlayer(GameEnum.checkers, player2AlgorithmCb.getValue(), User.TWO, random,2, player2InputVal);
 
@@ -175,7 +182,7 @@ public class GameFormController implements Initializable {
             }
             case mangala:
             {
-                gameState = new MangalaGameState();
+                gameState = new MangalaGameState(gameLevelCb.getValue());
                 player1 = PlayerSetting.initializePlayer(GameEnum.mangala, player1AlgorithmCb.getValue(), User.ONE, random,1, player1InputVal);
                 player2 = PlayerSetting.initializePlayer(GameEnum.mangala, player2AlgorithmCb.getValue(), User.TWO, random,2, player2InputVal);
 
@@ -207,20 +214,36 @@ public class GameFormController implements Initializable {
         if (!numOfRandActionTf.getText().isEmpty())
             numOfRandAction = Integer.parseInt(numOfRandActionTf.getText().toString());
 
-        GameTask gameTask = new GameTask(gameCount, player1, player2, randomPlayer1, randomPlayer2, gameState, numOfRandAction, verboseChck.isSelected());
-        gameTask.valueProperty().addListener(new ChangeListener<String>() {
+        this.gameTask = new GameTask(gameCount, player1, player2, randomPlayer1, randomPlayer2, gameState, numOfRandAction, verboseChck.isSelected());
+        this.gameTask.valueProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
                 logTxt.setText(t1);
             }
         });
 
-        progressBar.progressProperty().bind(gameTask.progressProperty());
+        progressBar.progressProperty().bind(this.gameTask.progressProperty());
 
-        th = new Thread(gameTask);
-        th.setDaemon(true);
-        th.start();
+        this.th = new Thread(this.gameTask);
+        this.th.setDaemon(true);
+        this.th.start();
 
+    }
+
+    @FXML
+    public void takeAction()
+    {
+        if (!this.isGameStarted)
+        {
+            logTxt.setText("");
+            setGameParameter();
+
+            // If game task is not created, create task for only 1 game.
+            if (this.gameTask == null)
+                this.gameTask = new GameTask(1, player1, player2, randomPlayer1, randomPlayer2, gameState, 1, verboseChck.isSelected());
+
+            this.gameTask.takeAction();
+        }
     }
 
     @FXML

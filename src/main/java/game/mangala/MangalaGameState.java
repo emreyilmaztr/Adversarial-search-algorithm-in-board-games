@@ -1,5 +1,6 @@
 package game.mangala;
 
+import searchAlgorithm.lib.UtilityEnum;
 import searchAlgorithm.lib.GameState;
 import searchAlgorithm.lib.User;
 
@@ -25,12 +26,14 @@ public class MangalaGameState extends GameState<MangalaAction> {
     private boolean joker;
     private boolean terminal;
     private int prevIndex;
-    public MangalaGameState() {
-        initialize();
+    private UtilityEnum utility;
+    public MangalaGameState(UtilityEnum utility) {
+        initialize(utility);
     }
 
     private MangalaGameState(MangalaGameState b)
     {
+        this.utility = b.utility;
         this.playerTreasure   = b.playerTreasure;
         this.opponentTreasure = b.opponentTreasure;
         this.prevIndex = b.prevIndex;
@@ -49,8 +52,9 @@ public class MangalaGameState extends GameState<MangalaAction> {
         this.joker = b.joker;
     }
 
-    private void initialize()
+    private void initialize(UtilityEnum utility)
     {
+        this.utility = utility;
         this.playerTreasure = 0;
         this.opponentTreasure = 0;
         this.prevIndex = 0;
@@ -70,7 +74,7 @@ public class MangalaGameState extends GameState<MangalaAction> {
 
     public void reset()
     {
-        initialize();
+        initialize(this.utility);
     }
 
     @Override

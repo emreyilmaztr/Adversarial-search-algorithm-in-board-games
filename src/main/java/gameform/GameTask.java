@@ -81,8 +81,11 @@ public class GameTask extends Task<String> {
         return ans;
     }
 
+    public void takeAction()
+    {
+        this.game.playOneStep(this.gameState, this.player1, this.player2, this.verbose, true);
 
-
-
-
+        if (this.gameState.isTerminal())
+            this.game.showResult(this.gameState, this.player1, this.player2, this.verbose);
+    }
 }

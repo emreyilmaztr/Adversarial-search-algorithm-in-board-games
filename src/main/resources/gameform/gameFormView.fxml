@@ -18,21 +18,30 @@
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
-    <HBox prefHeight="150.0" prefWidth="800.0">
+    <HBox prefHeight="62.0" prefWidth="799.0">
         <children>
-            <Separator prefWidth="200.0" visible="false" />
-            <Label alignment="CENTER" contentDisplay="CENTER" minHeight="30.0" minWidth="100.0" prefHeight="30.0" prefWidth="100.0" text="Game:">
+            <Label alignment="CENTER" contentDisplay="CENTER" minHeight="30.0" minWidth="60.0" prefHeight="30.0" prefWidth="60.0" text="Game:">
                 <font>
                     <Font name="System Bold" size="16.0" />
                 </font>
             </Label>
+         <Separator prefWidth="20.0" visible="false" />
             <ChoiceBox fx:id="gameCb" minHeight="30.0" minWidth="150.0" prefHeight="30.0" prefWidth="150.0" />
-            <Separator prefWidth="50.0" visible="false" />
-            <Label fx:id="boardSizeLbl" alignment="CENTER" contentDisplay="CENTER" minHeight="30.0" minWidth="100.0" prefHeight="30.0" prefWidth="100.0" text="Board Size:">
+            <Separator prefWidth="40.0" visible="false" />
+         <Label alignment="CENTER" contentDisplay="CENTER" minHeight="30.0" minWidth="60.0" prefHeight="30.0" prefWidth="60.0" text="Utility:">
+            <font>
+               <Font name="System Bold" size="16.0" />
+            </font>
+         </Label>
+         <Separator prefWidth="20.0" visible="false" />
+         <ChoiceBox fx:id="gameLevelCb" minHeight="30.0" minWidth="150.0" prefHeight="30.0" prefWidth="150.0" />
+         <Separator prefWidth="40.0" visible="false" />
+            <Label fx:id="boardSizeLbl" alignment="CENTER" contentDisplay="CENTER" minHeight="30.0" minWidth="80.0" prefHeight="30.0" prefWidth="80.0" text="Board Size:">
                 <font>
                     <Font name="System Bold Italic" size="12.0" />
                 </font>
             </Label>
+         <Separator prefWidth="20.0" visible="false" />
             <ChoiceBox fx:id="boardSizeCb" minHeight="30.0" minWidth="50.0" prefHeight="30.0" prefWidth="50.0" />
         </children>
     </HBox>
@@ -113,9 +122,11 @@
     </Pane>
     <HBox prefHeight="100.0" prefWidth="200.0">
         <children>
-            <Separator prefHeight="23.0" prefWidth="556.0" visible="false" />
+            <Separator prefHeight="25.0" prefWidth="460.0" visible="false" />
+         <Button mnemonicParsing="false" onMouseClicked="#takeAction" prefHeight="25.0" prefWidth="86.0" text="Take Action" />
+         <Separator prefHeight="25.0" prefWidth="30.0" visible="false" />
             <Button fx:id="startGameBtn" mnemonicParsing="false" onMouseClicked="#startGame" prefHeight="25.0" prefWidth="93.0" text="Start Game" />
-            <Separator prefHeight="25.0" prefWidth="33.0" visible="false" />
+            <Separator prefHeight="25.0" prefWidth="30.0" visible="false" />
             <Button mnemonicParsing="false" onMouseClicked="#stopGame" prefHeight="25.0" prefWidth="82.0" text="Stop" />
         </children>
     </HBox>
