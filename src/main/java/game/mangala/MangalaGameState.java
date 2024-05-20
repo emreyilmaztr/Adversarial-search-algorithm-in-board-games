@@ -289,8 +289,7 @@ public class MangalaGameState extends GameState<MangalaAction> {
         return ans;
     }
 
-    @Override
-    public Map<User, Double> getUtilityMap() {
+    public Map<User, Double> getUtilityMap1() {
 
         double player1Score = normalize(playerTreasure, opponentTreasure);
         double player2Score = normalize(opponentTreasure, playerTreasure);
@@ -308,6 +307,67 @@ public class MangalaGameState extends GameState<MangalaAction> {
         }
 
         return score;
+    }
+
+    public Map<User, Double> getUtilityMap2() {
+
+        double player1Score = normalize(playerTreasure, opponentTreasure);
+        double player2Score = normalize(opponentTreasure, playerTreasure);
+
+        Map<User, Double> score = new HashMap<User, Double>();
+
+        if (this.terminal == true)
+        {
+            score = getScoreMap(player1Score, player2Score);
+        }
+        else
+        {
+            score.put(User.ONE, player1Score);
+            score.put(User.TWO, player2Score);
+        }
+
+        return score;
+    }
+
+    public Map<User, Double> getUtilityMap3() {
+
+        double player1Score = normalize(playerTreasure, opponentTreasure);
+        double player2Score = normalize(opponentTreasure, playerTreasure);
+
+        Map<User, Double> score = new HashMap<User, Double>();
+
+        if (this.terminal == true)
+        {
+            score = getScoreMap(player1Score, player2Score);
+        }
+        else
+        {
+            score.put(User.ONE, player1Score);
+            score.put(User.TWO, player2Score);
+        }
+
+        return score;
+    }
+
+    @Override
+    public Map<User, Double> getUtilityMap() {
+
+        if (this.utility == UtilityEnum.UTILITY_1)
+        {
+            return getUtilityMap1();
+        }
+        else if (this.utility == UtilityEnum.UTILITY_2)
+        {
+            return getUtilityMap2();
+        }
+        else if (this.utility == UtilityEnum.UTILITY_3)
+        {
+            return getUtilityMap3();
+        }
+        else
+        {
+            return getUtilityMap1();
+        }
     }
     private double normalize(double score1, double score2) {
         return (score1 - score2) / (score1 + score2 + 0.0001);

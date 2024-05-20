@@ -423,7 +423,7 @@ public class CheckersGameState extends GameState<CheckersAction> {
         return getLegalActions(type);
     }
 
-    public Map<User, Double> getEasyUtilityMap() {
+    public Map<User, Double> getUtilityMap1() {
 
         Map<User, Double> score = new HashMap<>();
 
@@ -460,7 +460,7 @@ public class CheckersGameState extends GameState<CheckersAction> {
         return score;
     }
 
-    public Map<User, Double> getMediumUtilityMap() {
+    public Map<User, Double> getUtilityMap2() {
 
         Map<User, Double> score = new HashMap<>();
 
@@ -515,7 +515,7 @@ public class CheckersGameState extends GameState<CheckersAction> {
         return score;
     }
 
-    public Map<User, Double> getHardUtilityMap() {
+    public Map<User, Double> getUtilityMap3() {
 
         Map<User, Double> score = new HashMap<>();
 
@@ -588,19 +588,19 @@ public class CheckersGameState extends GameState<CheckersAction> {
 
         if (this.utility == UtilityEnum.UTILITY_1)
         {
-            return getEasyUtilityMap();
+            return getUtilityMap1();
         }
         else if (this.utility == UtilityEnum.UTILITY_2)
         {
-            return getMediumUtilityMap();
+            return getUtilityMap2();
         }
         else if (this.utility == UtilityEnum.UTILITY_3)
         {
-            return getHardUtilityMap();
+            return getUtilityMap3();
         }
         else
         {
-            return getEasyUtilityMap();
+            return getUtilityMap1();
         }
     }
 
