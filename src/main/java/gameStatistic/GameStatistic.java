@@ -39,7 +39,9 @@ public class GameStatistic{
         // Tic-Tac-Toe
         game= GameEnum.tictactoe;
         state = getState(game, utility, 5);
-        //createDimStats(game, state, mcts, mctsWithWu, numOfIteration, numOfRandAction, mctsParam, false);
+        createDimStats(game, state, UtilityEnum.UTILITY_1, mcts, mctsWithWu, numOfIteration, numOfRandAction, mctsParam, false);
+        createDimStats(game, state, UtilityEnum.UTILITY_2, mcts, mctsWithWu, numOfIteration, numOfRandAction, mctsParam, false);
+        createDimStats(game, state, UtilityEnum.UTILITY_3, mcts, mctsWithWu, numOfIteration, numOfRandAction, mctsParam, false);
         //create2DimStats(game, state, mctsWithWu, alphaBeta, numOfIteration, numOfRandAction, tttMctsParam, tttABParam, false);
         // Random action
         //createDimStats(game, state, mcts, mctsWithWu, numOfIteration, 5, mctsParam, false);
@@ -47,7 +49,9 @@ public class GameStatistic{
         // Mangala
         game = GameEnum.mangala;
         state = getState(game, utility, 0);
-        //createDimStats(game, state, mcts, mctsWithWu, numOfIteration, numOfRandAction, mctsParam, false);
+        createDimStats(game, state, UtilityEnum.UTILITY_1, mcts, mctsWithWu, numOfIteration, numOfRandAction, mctsParam, false);
+        createDimStats(game, state, UtilityEnum.UTILITY_2, mcts, mctsWithWu, numOfIteration, numOfRandAction, mctsParam, false);
+        createDimStats(game, state, UtilityEnum.UTILITY_3, mcts, mctsWithWu, numOfIteration, numOfRandAction, mctsParam, false);
         //create2DimStats(game, state, mctsWithWu, alphaBeta, numOfIteration, numOfRandAction, mangalaMctsParam, mangalaABParam, false);
 
         // Random action
@@ -56,8 +60,8 @@ public class GameStatistic{
         // Checkers
         game = GameEnum.checkers;
         state = getState(game, utility, 0);
-        //createDimStats(game, state, UtilityEnum.UTILITY_1, mcts, mctsWithWu, numOfIteration, numOfRandAction, mctsParam, false);
-        //createDimStats(game, state, UtilityEnum.UTILITY_2, mcts, mctsWithWu, numOfIteration, numOfRandAction, mctsParam, false);
+        createDimStats(game, state, UtilityEnum.UTILITY_1, mcts, mctsWithWu, numOfIteration, numOfRandAction, mctsParam, false);
+        createDimStats(game, state, UtilityEnum.UTILITY_2, mcts, mctsWithWu, numOfIteration, numOfRandAction, mctsParam, false);
         createDimStats(game, state, UtilityEnum.UTILITY_3, mcts, mctsWithWu, numOfIteration, numOfRandAction, mctsParam, false);
         //create2DimStats(game, state, mctsWithWu, alphaBeta, numOfIteration, numOfRandAction, checkersMctsParam, checkersABParam, false);
 
