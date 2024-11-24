@@ -72,7 +72,7 @@ public class MctsWithWu<A extends Action> implements ISearchAlgorithm {
     {
         GameState<A> root = gameState.getDeepCopy();
         MctsWithWuSearcher<A> searcher = new MctsWithWuSearcher<A>(this.EXPAND_THRESHOLD, this.TIME_LIMIT, this.C, this.rand.nextLong(), root);
-        searcher.applyAlgorithm();
+        searcher.applyAlgorithm(user);
 
         // Sum each thread value
         Map<A, Node<A>> children = searcher.getRootChildren();

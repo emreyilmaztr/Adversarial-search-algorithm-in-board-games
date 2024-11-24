@@ -24,7 +24,7 @@ public class MctsWithWuSearcher<A extends Action>{
         this.rand = new Random(seed);
         this.rootNode = new Node<A>(rootGameState, null);
     }
-    public void applyAlgorithm() {
+    public void applyAlgorithm(User user) {
         //long sTime = System.currentTimeMillis();
         //while (System.currentTimeMillis() - sTime < this.TIME_LIMIT)
         int iteration = 0;
@@ -35,7 +35,8 @@ public class MctsWithWuSearcher<A extends Action>{
             if (selected.numVisits >= this.EXPAND_THRESHOLD - 1) {
                 expand(selected);
             }
-            Map<User, Double> score = rollout(selected);
+            //Map<User, Double> score = rollout(selected);
+            Map<User, Double> score = rolloutWithUtility(selected, user);
             backPropagate(selected, score);
 
             iteration++;
@@ -98,6 +99,48 @@ public class MctsWithWuSearcher<A extends Action>{
             node.children.put(a, child);
         }
     }
+    private Map<User, Double> rolloutWithUtility(Node<A> node, User user) {
+
+        GameState<A> gameState = node.gameState.getDeepCopy();
+        while (!gameState.isTerminal()) {
+            List<A> actions = gameState.getLegalActions();
+
+            double gamma = 0.9;
+            double ui = 0.0, si = 0.0, ri = 0.0, ui_hat = 0.0, max_ui_hat = 0.0;
+
+            A selectedAction = actions.get(0);
+
+            for (A a : actions)
+            {
+                GameState<A> nextGameState = gameState.getDeepCopy();
+                nextGameState.process(a, User.NULL);
+
+                ui = nextGameState.getUtility(gameState.getTurn());
+
+                // current user is maximum
+                if ( gameState.getTurn() == user )
+                {
+                    si = Math.max(ui, 0);
+                }
+                else
+                {
+                    si = Math.max(-ui, 0);
+                }
+
+                ri = rand.nextDouble(0, gamma);
+                ui_hat = Math.max(si - ri, 0);
+
+                if (ui_hat > max_ui_hat)
+                {
+                    max_ui_hat = ui_hat;
+                    selectedAction = a;
+                }
+            }
+            gameState.process(selectedAction, User.NULL);
+        }
+        return gameState.getUtilityMap();
+    }
+
     private Map<User, Double> rollout(Node<A> node) {
 
         GameState<A> gameState = node.gameState.getDeepCopy();
